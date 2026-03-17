@@ -26,6 +26,7 @@
   var players = [];               // populated by API or fallback
   var currentSorted = [];
   var usingAPI = false;
+  var authUser = null;
 
   /* ── Helpers ── */
   var ords = ['1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th'];
@@ -37,6 +38,65 @@
     return name.split(' ').slice(0, 2).map(function (n) { return n[0]; }).join('').toUpperCase();
   }
   function rkClass(i) { return ['rk1','rk2','rk3'][i] || 'rk-n'; }
+
+  window.toggleMenu = function () {
+    var links = document.getElementById('navlinks');
+    if (links) links.classList.toggle('show');
+  };
+
+  window.handleUserBtn = function () {
+    if (authUser) {
+      window.location.href = 'dashboard.html';
+    } else {
+      window.location.href = 'login.html';
+    }
+  };
+
+  function setUserUI() {
+    var labelEl = document.getElementById('userBtnLabel');
+    var initialEl = document.getElementById('userInitial');
+    if (!labelEl || !initialEl) return;
+
+    if (!authUser) {
+      labelEl.textContent = 'Sign In';
+      initialEl.textContent = 'U';
+      return;
+    }
+
+    var fullName = authUser.full_name || authUser.username || 'User';
+    labelEl.textContent = fullName.split(' ')[0];
+    initialEl.textContent = ini(fullName).charAt(0) || 'U';
+  }
+
+  async function hydrateSession() {
+    try {
+      if (typeof DB !== 'undefined' && typeof DB.checkSession === 'function') {
+        var res = await DB.checkSession();
+        authUser = res && res.user ? res.user : null;
+      }
+    } catch (_) {
+      authUser = null;
+    }
+    setUserUI();
+  }
+
+  function updateMetrics() {
+    var total = players.length;
+    var top = players.slice().sort(function (a, b) { return b.avgPct - a.avgPct; })[0] || null;
+
+    var totalEl = document.getElementById('mTotalPlayers');
+    var topEl = document.getElementById('mTopScore');
+    var streakEl = document.getElementById('mTopStreak');
+    var sourceEl = document.getElementById('mSource');
+
+    if (totalEl) totalEl.textContent = String(total);
+    if (topEl) topEl.textContent = top ? (top.avgPct + '%') : '0%';
+    if (streakEl) {
+      var streak = top ? Math.max.apply(null, players.map(function (p) { return p.streak || 0; })) : 0;
+      streakEl.textContent = streak + ' day' + (streak === 1 ? '' : 's');
+    }
+    if (sourceEl) sourceEl.textContent = usingAPI ? 'Live API' : 'Demo Data';
+  }
 
   /* Normalize player object from API to a common shape */
   function normalize(p) {
@@ -80,14 +140,26 @@
   function renderFull() {
     var sel = document.getElementById('sortSel');
     var by = sel ? sel.value : 'score';
+    var searchInput = document.getElementById('searchPlayer');
+    var q = searchInput ? String(searchInput.value || '').trim().toLowerCase() : '';
     currentSorted = players.slice();
 
     if (by === 'score')       currentSorted.sort(function (a, b) { return b.avgPct - a.avgPct; });
     else if (by === 'streak') currentSorted.sort(function (a, b) { return b.streak - a.streak; });
     else                      currentSorted.sort(function (a, b) { return a.name.localeCompare(b.name); });
 
+    if (q) {
+      currentSorted = currentSorted.filter(function (p) {
+        return p.name.toLowerCase().indexOf(q) !== -1;
+      });
+    }
+
     var el = document.getElementById('fullList');
     if (!el) return;
+    if (!currentSorted.length) {
+      el.innerHTML = '<div class="lb-row full-cols"><div class="player-cell"><span class="player-name">No matching players found.</span></div><div></div><div></div><div></div><div></div></div>';
+      return;
+    }
     el.innerHTML = currentSorted.map(function (p, i) {
       return '<div class="lb-row full-cols" style="animation-delay:' + (i * 0.04) + 's">' +
         '<div class="player-cell"><div class="avatar">' + esc(ini(p.name)) + '</div><span class="player-name">' + esc(p.name) + '</span></div>' +
@@ -136,6 +208,8 @@
     document.getElementById('mCorrect').textContent  = p.score;
     document.getElementById('mWrong').textContent    = p.total - p.score;
     document.getElementById('mPoints').textContent   = p.score;
+    var donut = document.querySelector('.donut');
+    if (donut) donut.style.setProperty('--score', pc + '%');
 
     var lbl = pc >= 100 ? 'Perfect score!' : pc >= 90 ? 'Amazing!' : pc >= 80 ? 'Great job!' : pc >= 70 ? 'Good job!' : 'Keep it up!';
     document.getElementById('mLbl').textContent = lbl;
@@ -170,6 +244,7 @@
 
   /* ── Init: try API first, fall back to demo ── */
   async function init() {
+    await hydrateSession();
     try {
       if (typeof API !== 'undefined') {
         var data = await API.getLeaderboard('score', 50);
@@ -183,6 +258,7 @@
     if (!usingAPI) {
       players = DEMO_PLAYERS.map(normalize);
     }
+    updateMetrics();
     renderTop10();
   }
 
