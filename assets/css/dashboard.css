@@ -646,6 +646,63 @@ html {
     grid-column: 1 / -1;
 }
 
+.uploaded-documents {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 18px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e2e8f0;
+    grid-column: 1 / -1;
+}
+
+.document-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 1rem;
+}
+
+.document-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.2rem;
+    border-radius: 12px;
+    background: var(--bg-blue);
+    border: 1px solid #dbeafe;
+}
+
+.document-name {
+    font-weight: 600;
+    color: var(--dark-gray);
+}
+
+.document-meta {
+    font-size: 0.85rem;
+    color: var(--muted-gray);
+}
+
+.document-pagination {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+}
+
+.document-pagination button {
+    width: auto;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: var(--focus-blue);
+    color: #fff;
+    font-size: 0.85rem;
+}
+
+.document-pagination button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
 .assessment-list {
     display: flex;
     flex-direction: column;

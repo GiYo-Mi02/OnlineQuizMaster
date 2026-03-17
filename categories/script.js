@@ -11,9 +11,12 @@ let startTime;
 let elapsedTime = 0;
 let currentUser = null;
 let sessionReady = Promise.resolve(null);
+let aiUploadedDocuments = [];
+let aiLastGenerated = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     initNavbar();
+    initAiGenerator();
 
     if (typeof DB === 'undefined') {
         applyIncomingStrandFromUrl();
@@ -24,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(user => {
             currentUser = user;
             refreshNavbarUser();
+            loadAiDocumentsFromServer();
             applyIncomingStrandFromUrl();
             return user;
         })
@@ -41,6 +45,174 @@ function initNavbar() {
     applyLanguage(lang);
     applyTheme(theme);
     refreshNavbarUser();
+}
+
+function initAiGenerator() {
+    const input = document.getElementById('aiDocsInput');
+    const uploadBtn = document.getElementById('aiUploadBtn');
+    const generateBtn = document.getElementById('aiGenerateBtn');
+    const selectedCount = document.getElementById('aiSelectedCount');
+
+    if (!input || !uploadBtn || !generateBtn) return;
+
+    input.addEventListener('change', () => {
+        const count = input.files ? input.files.length : 0;
+        selectedCount.textContent = count ? `${count} file(s) selected` : 'No files selected';
+    });
+
+    uploadBtn.addEventListener('click', async () => {
+        if (!currentUser) {
+            notify('Please sign in before uploading documents.', 'error');
+            return;
+        }
+
+        const files = Array.from(input.files || []);
+        if (!files.length) {
+            notify('Please select at least one document.', 'error');
+            return;
+        }
+
+        if ((aiUploadedDocuments.length + files.length) > 20) {
+            notify('You can only upload up to 20 documents.', 'error');
+            return;
+        }
+
+        setAiStatus('Uploading and parsing documents...');
+        uploadBtn.disabled = true;
+        try {
+            const data = await DB.uploadDocuments(files);
+            aiUploadedDocuments = aiUploadedDocuments.concat(data.documents || []);
+            renderUploadedDocuments();
+            input.value = '';
+            selectedCount.textContent = 'No files selected';
+            setAiStatus(`Uploaded ${data.documents.length} document(s).`);
+        } catch (err) {
+            setAiStatus((err && err.message) || 'Upload failed.');
+            notify((err && err.message) || 'Upload failed.', 'error');
+        } finally {
+            uploadBtn.disabled = false;
+        }
+    });
+
+    generateBtn.addEventListener('click', async () => {
+        if (!currentUser) {
+            notify('Please sign in before generating quizzes.', 'error');
+            return;
+        }
+
+        const confirm = document.getElementById('aiConfirmModules');
+        if (!confirm || !confirm.checked) {
+            notify('Please confirm that your modules are complete before generation.', 'error');
+            return;
+        }
+
+        if (!aiUploadedDocuments.length) {
+            notify('Upload at least one document first.', 'error');
+            return;
+        }
+
+        const mode = (document.getElementById('aiModeSelect') || {}).value || 'Quiz';
+        const qCount = Math.min(Math.max(parseInt((document.getElementById('aiQuestionCount') || {}).value, 10) || 20, 5), 30);
+        const docIds = aiUploadedDocuments.map(d => d.id);
+
+        generateBtn.disabled = true;
+        setAiStatus('Generating medium-difficult questions with Gemini...');
+        try {
+            const result = await DB.generateAiQuiz(docIds, qCount, mode);
+            aiLastGenerated = result;
+            setAiStatus(`Generated ${result.questionCount} questions. Launching ${mode}...`);
+            launchAiQuiz(result, mode);
+        } catch (err) {
+            setAiStatus((err && err.message) || 'Generation failed.');
+            notify((err && err.message) || 'Generation failed.', 'error');
+        } finally {
+            generateBtn.disabled = false;
+        }
+    });
+
+    renderUploadedDocuments();
+}
+
+function setAiStatus(text) {
+    const status = document.getElementById('aiStatus');
+    if (status) status.textContent = text || '';
+}
+
+function renderUploadedDocuments() {
+    const wrap = document.getElementById('aiUploadedList');
+    if (!wrap) return;
+
+    if (!aiUploadedDocuments.length) {
+        wrap.innerHTML = '<span class="ai-doc-chip">No uploaded modules yet</span>';
+        return;
+    }
+
+    wrap.innerHTML = aiUploadedDocuments.map(doc =>
+        `<span class="ai-doc-chip">${escapeHtml(doc.originalName || doc.original_name || 'Document')}</span>`
+    ).join('');
+}
+
+async function loadAiDocumentsFromServer() {
+    if (!currentUser || typeof DB === 'undefined' || !DB.getUploadedDocuments) return;
+    try {
+        const data = await DB.getUploadedDocuments(20, 0);
+        aiUploadedDocuments = data.documents || [];
+        renderUploadedDocuments();
+    } catch (_) {
+        // Ignore fetch errors and keep local state empty.
+    }
+}
+
+function launchAiQuiz(result, mode) {
+    const generatedQuestions = (result.questions || []).map(q => ({
+        question: q.question,
+        answers: q.choices,
+        correctAnswer: q.answerIndex,
+    }));
+
+    if (!generatedQuestions.length) {
+        notify('No generated questions found.', 'error');
+        return;
+    }
+
+    currentStrand = 'AI-' + result.quizId;
+    currentSubject = result.title || 'Document Quiz';
+    currentMode = mode;
+    currentQuestionIndex = 0;
+    score = 0;
+    userAnswers = [];
+
+    if (mode === 'Review') {
+        const wrongAnswers = getWrongAnswers(currentStrand, currentSubject);
+        if (!wrongAnswers.length) {
+            notify('No wrong answers yet for this generated quiz. Try Practice first.', 'error');
+            return;
+        }
+        quizQuestions = generatedQuestions.filter(q => wrongAnswers.some(w => w.question === q.question));
+        if (!quizQuestions.length) {
+            notify('No review questions available for this generated quiz.', 'error');
+            return;
+        }
+    } else {
+        quizQuestions = shuffleArray(generatedQuestions);
+    }
+
+    document.getElementById('quizTitle').textContent = `AI • ${currentSubject}`;
+    document.getElementById('totalQuestions').textContent = quizQuestions.length;
+    document.getElementById('totalScore').textContent = quizQuestions.length;
+
+    hideAllPages();
+    document.getElementById('quizPage').classList.remove('hidden');
+    startTimer();
+    displayQuestion();
+}
+
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
 }
 
 function applyTheme(theme) {
@@ -1855,6 +2027,10 @@ function finishQuiz() {
 
 // pang ulit ng quiz pag gusto ulitin (with new randomization)
 function retakeQuiz() {
+    if (currentStrand && String(currentStrand).indexOf('AI-') === 0 && aiLastGenerated) {
+        launchAiQuiz(aiLastGenerated, currentMode);
+        return;
+    }
     startQuiz(currentMode);
 }
 

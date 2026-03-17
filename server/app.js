@@ -115,6 +115,7 @@ app.use(express.static(publicDir, {
 // =============================================
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/quiz', require('./routes/quiz'));
+app.use('/api/ai', require('./routes/ai'));
 
 // =============================================
 // Catch-all for SPA-like HTML navigation

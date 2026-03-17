@@ -273,6 +273,129 @@ body {
     margin: 0 auto;
 }
 
+.ai-generator {
+    background: var(--white);
+    border: 1px solid var(--border-gray);
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    margin-bottom: 20px;
+}
+
+.ai-header h2 {
+    margin: 0;
+    text-align: left;
+    color: var(--focus-blue);
+}
+
+.ai-header p {
+    margin: 6px 0 0;
+    color: var(--text-light);
+}
+
+.ai-grid {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.ai-panel {
+    background: var(--quiz-blue);
+    border: 1px solid var(--border-gray);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.ai-panel h3 {
+    margin: 0;
+    color: var(--text-dark);
+}
+
+.ai-note {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin: 6px 0 10px;
+}
+
+#aiDocsInput {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--border-gray);
+    border-radius: 8px;
+    background: var(--white);
+    color: var(--text-dark);
+}
+
+.ai-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+#aiUploadBtn,
+#aiGenerateBtn {
+    width: auto;
+    padding: 10px 14px;
+}
+
+#aiSelectedCount {
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.ai-confirm {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 10px;
+    color: var(--text-dark);
+}
+
+.ai-uploaded-list {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.ai-doc-chip {
+    background: var(--white);
+    border: 1px solid var(--border-gray);
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: 0.85rem;
+    color: var(--text-dark);
+}
+
+.ai-form-group {
+    margin-bottom: 10px;
+}
+
+.ai-form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+}
+
+.ai-form-group select,
+.ai-form-group input {
+    width: 100%;
+    border: 1px solid var(--border-gray);
+    border-radius: 8px;
+    background: var(--white);
+    color: var(--text-dark);
+    padding: 9px;
+}
+
+.ai-status {
+    margin-top: 10px;
+    color: var(--text-light);
+    min-height: 20px;
+}
+
 .hidden {
     display: none;
 }
@@ -711,6 +834,10 @@ button:disabled {
         justify-content: flex-start;
         flex-wrap: wrap;
         margin-top: 2px;
+    }
+
+    .ai-grid {
+        grid-template-columns: 1fr;
     }
 
 }

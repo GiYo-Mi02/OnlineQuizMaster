@@ -9,8 +9,10 @@ const API = (function () {
 
   async function request(endpoint, options) {
     const url = BASE + endpoint;
+    const isFormData = options && options.body && typeof FormData !== 'undefined' && options.body instanceof FormData;
+    const baseHeaders = isFormData ? {} : { 'Content-Type': 'application/json' };
     const config = Object.assign({}, options || {}, {
-      headers: Object.assign({ 'Content-Type': 'application/json' }, (options && options.headers) || {}),
+      headers: Object.assign(baseHeaders, (options && options.headers) || {}),
       credentials: 'include',   // send session cookie
     });
 
@@ -90,6 +92,37 @@ const API = (function () {
     return request('/quiz/reviews');
   }
 
+  // ---------- AI Quiz ----------
+
+  function uploadDocuments(files) {
+    var form = new FormData();
+    files.forEach(function (f) { form.append('documents', f); });
+    return request('/ai/documents/upload', {
+      method: 'POST',
+      body: form,
+    });
+  }
+
+  function getUploadedDocuments(limit, offset) {
+    var qs = '?limit=' + (limit || 5) + '&offset=' + (offset || 0);
+    return request('/ai/documents' + qs);
+  }
+
+  function generateAiQuiz(documentIds, maxQuestions, mode) {
+    return request('/ai/quiz/generate', {
+      method: 'POST',
+      body: JSON.stringify({
+        documentIds: documentIds,
+        maxQuestions: maxQuestions,
+        mode: mode,
+      }),
+    });
+  }
+
+  function getAiQuiz(quizId) {
+    return request('/ai/quiz/' + quizId);
+  }
+
   // Public API
   return {
     request: request,
@@ -103,5 +136,9 @@ const API = (function () {
     getLeaderboard: getLeaderboard,
     submitReview: submitReview,
     getReviews: getReviews,
+    uploadDocuments: uploadDocuments,
+    getUploadedDocuments: getUploadedDocuments,
+    generateAiQuiz: generateAiQuiz,
+    getAiQuiz: getAiQuiz,
   };
 })();

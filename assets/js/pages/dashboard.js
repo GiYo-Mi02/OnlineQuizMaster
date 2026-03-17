@@ -7,6 +7,8 @@
 
     var currentLang = (typeof DB !== 'undefined' ? DB.lang() : null) || localStorage.getItem('qm_lang') || 'EN';
     var currentUser = null;
+    var docsOffset = 0;
+    var docsLimit = 5;
 
     // =============================================
     // Translations
@@ -30,6 +32,10 @@
             score           : 'Score',
             quizzes         : 'Quizzes',
             recentAssessments:'Recent Assessments',
+            uploadedDocuments: 'Uploaded Documents',
+            noDocumentsYet  : 'No uploaded documents yet.',
+            prev            : 'Previous',
+            next            : 'Next',
             returnHome      : 'Return to Home',
             help            : 'Help & Support',
             signUp          : 'Sign Up',
@@ -53,6 +59,10 @@
             score           : 'Marka',
             quizzes         : 'Mga Quiz',
             recentAssessments:'Mga Kamakailang Pagtatasa',
+            uploadedDocuments: 'Mga In-upload na Dokumento',
+            noDocumentsYet  : 'Wala pang in-upload na dokumento.',
+            prev            : 'Nakaraan',
+            next            : 'Susunod',
             returnHome      : 'Bumalik sa Tahanan',
             help            : 'Tulong at Suporta',
             signUp          : 'Mag-sign Up',
@@ -92,10 +102,12 @@
         try {
             var stats = await DB.getUserStats();
             showDashboard(user, stats);
+            loadUploadedDocuments(0);
         } catch (err) {
             console.error('Dashboard load error:', err);
             // If stats fail, still show dashboard with empty data
             showDashboard(user, null);
+            loadUploadedDocuments(0);
         }
     }
 
@@ -449,7 +461,58 @@
         if (helpBtn) helpBtn.textContent = t('help');
         var label = document.getElementById('userBtnLabel');
         if (label && !currentUser) label.textContent = t('signUp');
+
+        var docsHeader = document.querySelector('.uploaded-documents h3');
+        if (docsHeader) docsHeader.textContent = t('uploadedDocuments');
     }
+
+    async function loadUploadedDocuments(offset) {
+        docsOffset = Math.max(0, offset || 0);
+        var list = document.getElementById('documentList');
+        var pager = document.getElementById('documentPagination');
+        if (!list || !pager || typeof DB === 'undefined' || !DB.getUploadedDocuments) return;
+
+        try {
+            var data = await DB.getUploadedDocuments(docsLimit, docsOffset);
+            var docs = data.documents || [];
+            var total = data.total || 0;
+
+            if (!docs.length) {
+                list.innerHTML = '<div class="empty-assessments"><span class="empty-icon">📄</span><p>' + esc(t('noDocumentsYet')) + '</p></div>';
+                pager.innerHTML = '';
+                return;
+            }
+
+            list.innerHTML = docs.map(function (d) {
+                var date = d.created_at ? new Date(d.created_at).toLocaleDateString() : '';
+                var sizeKb = Math.max(1, Math.round((d.file_size || 0) / 1024));
+                return '<div class="document-item">' +
+                    '<div>' +
+                        '<div class="document-name">' + esc(d.original_name || 'Document') + '</div>' +
+                        '<div class="document-meta">' + esc((d.mime_type || 'file') + ' • ' + sizeKb + ' KB') + '</div>' +
+                    '</div>' +
+                    '<div class="document-meta">' + esc(date) + '</div>' +
+                '</div>';
+            }).join('');
+
+            var prevDisabled = docsOffset <= 0 ? 'disabled' : '';
+            var nextDisabled = (docsOffset + docsLimit) >= total ? 'disabled' : '';
+            pager.innerHTML =
+                '<button ' + prevDisabled + ' onclick="dashboardDocsPrev()">' + esc(t('prev')) + '</button>' +
+                '<button ' + nextDisabled + ' onclick="dashboardDocsNext()">' + esc(t('next')) + '</button>';
+        } catch (err) {
+            list.innerHTML = '<div class="empty-assessments"><span class="empty-icon">⚠️</span><p>' + esc(err.message || 'Failed to load documents') + '</p></div>';
+            pager.innerHTML = '';
+        }
+    }
+
+    window.dashboardDocsPrev = function () {
+        loadUploadedDocuments(Math.max(0, docsOffset - docsLimit));
+    };
+
+    window.dashboardDocsNext = function () {
+        loadUploadedDocuments(docsOffset + docsLimit);
+    };
 
     window.handleHelpSupport = function () {
         var msg = currentLang === 'FIL'

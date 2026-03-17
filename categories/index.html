@@ -75,6 +75,48 @@
     </div>
 </nav>
 
+        <section class="ai-generator" id="aiGeneratorSection">
+            <div class="ai-header">
+                <h2>AI Quiz Generator (Gemini)</h2>
+                <p>Upload up to 20 module files (PDF, DOCX, TXT). Generate up to 30 medium-difficult questions.</p>
+            </div>
+
+            <div class="ai-grid">
+                <div class="ai-panel">
+                    <h3>1) Upload Modules</h3>
+                    <p class="ai-note">Select documents and upload them to build your quiz context.</p>
+                    <input type="file" id="aiDocsInput" accept=".pdf,.docx,.txt" multiple>
+                    <div class="ai-row">
+                        <button id="aiUploadBtn" type="button">Upload Documents</button>
+                        <span id="aiSelectedCount">No files selected</span>
+                    </div>
+                    <label class="ai-confirm">
+                        <input type="checkbox" id="aiConfirmModules">
+                        I confirm these are all modules I want to upload.
+                    </label>
+                    <div id="aiUploadedList" class="ai-uploaded-list"></div>
+                </div>
+
+                <div class="ai-panel">
+                    <h3>2) Generate Quiz</h3>
+                    <div class="ai-form-group">
+                        <label for="aiModeSelect">Mode</label>
+                        <select id="aiModeSelect">
+                            <option value="Quiz">Quiz</option>
+                            <option value="Practice">Practice</option>
+                            <option value="Review">Review</option>
+                        </select>
+                    </div>
+                    <div class="ai-form-group">
+                        <label for="aiQuestionCount">Question Count (max 30)</label>
+                        <input type="number" id="aiQuestionCount" min="5" max="30" value="20">
+                    </div>
+                    <button id="aiGenerateBtn" type="button">Generate with Gemini</button>
+                    <p id="aiStatus" class="ai-status"></p>
+                </div>
+            </div>
+        </section>
+
         <!-- STRAND SELECTION -->
         <div id="strandPage" class="dashboard-container">
             <div class="dashboard-header">

@@ -77,6 +77,24 @@ const DB = (function () {
     return API.getReviews();
   }
 
+  // ---- AI Quiz ----
+
+  function uploadDocuments(files) {
+    return API.uploadDocuments(files);
+  }
+
+  function getUploadedDocuments(limit, offset) {
+    return API.getUploadedDocuments(limit, offset);
+  }
+
+  function generateAiQuiz(documentIds, maxQuestions, mode) {
+    return API.generateAiQuiz(documentIds, maxQuestions, mode);
+  }
+
+  function getAiQuiz(quizId) {
+    return API.getAiQuiz(quizId);
+  }
+
   // ---- Local preferences (non-sensitive) ----
 
   function lang() {
@@ -107,6 +125,10 @@ const DB = (function () {
     getLeaderboard: getLeaderboard,
     submitReview: submitReview,
     getReviews: getReviews,
+    uploadDocuments: uploadDocuments,
+    getUploadedDocuments: getUploadedDocuments,
+    generateAiQuiz: generateAiQuiz,
+    getAiQuiz: getAiQuiz,
     lang: lang,
     saveLang: saveLang,
     theme: theme,
