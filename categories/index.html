@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Senior High School Learning Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0">
+    <script src="../assets/js/utils/api.js" defer></script>
+    <script src="../assets/js/utils/db.js" defer></script>
+    <script src="../assets/js/utils/toast.js" defer></script>
+
+
+    
+</head>
+<body>
+    <div class="container">
+
+        <!--navbar-->
+<nav class="navbar">
+    <div class="logo" onclick="showHome()">
+        <div class="logo-img"><img src="../assets/images/homepage/trophy.png" onerror="this.style.display='none'"></div>
+        <span>QuizMaster</span>
+    </div>
+
+    <!--menu-->
+    <button class="mobile-menu" onclick="toggleMobileMenu()">
+        <img src="../assets/images/homepage/menu.png" onerror="this.outerHTML='<span style=font-size:22px>☰</span>'">
+    </button>
+
+    <ul class="nav-links" id="navlinks">
+        <li><a href="../homepage.html" data-en="Home" data-fil="Tahanan">Home</a></li>
+        <li><a href="index.html" class="active-link" data-en="Categories" data-fil="Mga Kategorya">Categories</a></li>
+        <li><a href="../homepage.html#tutorial" data-en="Tutorial" data-fil="Tutorial">Tutorial</a></li>
+        <li><a href="../homepage.html#subscription" data-en="Plans" data-fil="Mga Plano">Plans</a></li>
+        <li>
+
+            <a href="../dashboard.html" onclick="return goToDashboard(event)">
+                <img src="../assets/images/homepage/dashboard.png" class="dashboard-img" onerror="this.style.display='none'">
+                <span data-en="Dashboard" data-fil="Dashboard">Dashboard</span>
+            </a>
+        </li>
+    </ul>
+
+    <!--language-->
+    <div class="nav-right">
+        <div class="language" id="langToggle" onclick="toggleLanguage(event)">
+            <img src="../assets/images/homepage/language.png" onerror="this.style.display='none'">
+            <span id="recentLang">EN</span>
+            <div class="select-lang" id="selectLang">
+                <button id="btnEN"  class="lang-active" onclick="setLanguage('EN',event)">🇺🇸 English</button>
+                <button id="btnFIL" onclick="setLanguage('FIL',event)">🇵🇭 Filipino</button>
+            </div>
+        </div>
+
+        <!--itimnamode-->
+         <button class="dark-toggle" id="darkToggle" onclick="toggleDarkMode()" title="Toggle dark mode" aria-label="Toggle dark mode">
+            <span class="toggle-track">
+                <span class="toggle-thumb"></span>
+            </span>
+            <span class="toggle-icon"><img id="themeIcon" src="../assets/images/homepage/light.png"></span>
+        </button>
+
+        <button class="help-btn"
+            data-en="Help & Support"
+            data-fil="Tulong at Suporta"
+            onclick="handleHelpSupport()">
+            Help & Support
+        </button>
+
+        <button class="user-btn" id="userBtn" onclick="handleUserBtn()">
+            <div class="avatar-initial" id="userInitial"><img src="../assets/images/homepage/profile.png"></div>
+            <span id="userBtnLabel" data-en="Log In" data-fil="Mag-log In">Log In</span>
+        </button>
+    </div>
+</nav>
+
+        <!-- STRAND SELECTION -->
+        <div id="strandPage" class="dashboard-container">
+            <div class="dashboard-header">
+                <h2>Senior High School Learning Platform</h2>
+            </div>
+
+            <h3 class="section-title">Select Your Strand</h3>
+            
+            <!-- Strand Grid -->
+            <div class="subjects-grid">
+                <div class="subject-card" onclick="selectStrand('STEM')">
+                    <div class="subject-icon" aria-hidden="true">
+                        <span class="material-symbols-rounded">science</span>
+                    </div>
+                    <h4>STEM</h4>
+                </div>
+                
+                <div class="subject-card" onclick="selectStrand('ABM')">
+                    <div class="subject-icon" aria-hidden="true">
+                        <span class="material-symbols-rounded">business_center</span>
+                    </div>
+                    <h4>ABM</h4>
+                </div>
+                
+                <div class="subject-card" onclick="selectStrand('HUMSS')">
+                    <div class="subject-icon" aria-hidden="true">
+                        <span class="material-symbols-rounded">auto_stories</span>
+                    </div>
+                    <h4>HUMSS</h4>
+                </div>
+                
+                <div class="subject-card" onclick="selectStrand('TVL')">
+                    <div class="subject-icon" aria-hidden="true">
+                        <span class="material-symbols-rounded">handyman</span>
+                    </div>
+                    <h4>TVL</h4>
+                </div>
+                
+                <div class="subject-card" onclick="selectStrand('TRM')">
+                    <div class="subject-icon" aria-hidden="true">
+                        <span class="material-symbols-rounded">flight</span>
+                    </div>
+                    <h4>TRM</h4>
+                </div>
+                
+                <div class="subject-card" onclick="selectStrand('CPG')">
+                    <div class="subject-icon" aria-hidden="true">
+                        <span class="material-symbols-rounded">desktop_windows</span>
+                    </div>
+                    <h4>CPG</h4>
+                </div>
+                
+                <div class="subject-card" onclick="selectStrand('CSS')">
+                    <div class="subject-icon" aria-hidden="true">
+                        <span class="material-symbols-rounded">groups</span>
+                    </div>
+                    <h4>CSS</h4>
+                </div>
+                
+                <div class="subject-card" onclick="selectStrand('HRS')">
+                    <div class="subject-icon" aria-hidden="true">
+                        <span class="material-symbols-rounded">restaurant</span>
+                    </div>
+                    <h4>HRS</h4>
+                </div>
+                
+                <div class="subject-card" onclick="selectStrand('SPT')">
+                    <div class="subject-icon" aria-hidden="true">
+                        <span class="material-symbols-rounded">sports_soccer</span>
+                    </div>
+                    <h4>SPT</h4>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUBJECTS SELECTION (based on strand) -->
+        <div id="subjectsPage" class="dashboard-container hidden">
+            <div class="dashboard-header">
+                <h2 id="selectedStrand"></h2>
+                <button onclick="backToStrands()" class="back-btn">← Back</button>
+            </div>
+
+            <h3 class="section-title">Select Your Subject</h3>
+            
+            <!-- Subject Grid (dynamically loaded) -->
+            <div class="subjects-grid" id="subjectsGrid">
+                <!-- subjects dito dynamically -->
+            </div>
+        </div>
+
+        <!-- DIFFICULTY SELECTION (Start Quiz, Practice & Review) -->
+        <div id="difficultyPage" class="dashboard-container hidden">
+            <div class="dashboard-header">
+                <h2 id="selectedSubject"></h2>
+                <button onclick="backToSubjects()" class="back-btn">← Back</button>
+            </div>
+
+            <h3 class="section-title">Choose Mode</h3>
+            
+            <!-- Difficulty Levels Grid -->
+            <div class="difficulty-grid-three">
+                <div class="difficulty-card start" onclick="startQuiz('Start Quiz')">
+                    <div class="difficulty-icon" aria-hidden="true">
+                        <span class="material-symbols-rounded">play_circle</span>
+                    </div>
+                    <h4>Start Quiz</h4>
+                    <p>Take the quiz normally</p>
+                </div>
+                
+                <div class="difficulty-card practice" onclick="startQuiz('Practice')">
+                    <div class="difficulty-icon" aria-hidden="true">
+                        <span class="material-symbols-rounded">edit_note</span>
+                    </div>
+                    <h4>Practice</h4>
+                    <p>All questions, tracks mistakes</p>
+                </div>
+                
+                <div class="difficulty-card review" onclick="startQuiz('Review')">
+                    <div class="difficulty-icon" aria-hidden="true">
+                        <span class="material-symbols-rounded">history</span>
+                    </div>
+                    <h4>Review</h4>
+                    <p>Questions you got wrong</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUIZ PAGE -->
+        <div id="quizPage" class="dashboard-container hidden">
+            <div class="dashboard-header">
+                <h2 id="quizTitle"></h2>
+                <button onclick="backToDifficulty()" class="back-btn">← Back</button>
+            </div>
+
+            <div class="quiz-info">
+                <div class="timer-container">
+                    <span>
+                        <span class="material-symbols-rounded inline-icon" aria-hidden="true">schedule</span>
+                        Time: <span id="timer">00:00</span>
+                    </span>
+                </div>
+                <div class="progress-container">
+                    <span>Question <span id="currentQuestion">1</span> of <span id="totalQuestions">20</span></span>
+                </div>
+            </div>
+
+            <div class="quiz-container">
+                <div class="question-container">
+                    <h3 id="questionText"></h3>
+                </div>
+
+                <div class="answers-container" id="answersContainer">
+                    <!-- answers dito -->
+                </div>
+
+                <button id="nextBtn" onclick="nextQuestion()" class="next-btn">Next Question</button>
+            </div>
+        </div>
+
+        <!-- RESULTS PAGE -->
+        <div id="resultsPage" class="dashboard-container hidden">
+            <div class="dashboard-header">
+                <h2>Quiz Results</h2>
+            </div>
+
+            <div class="results-container">
+                <div class="score-display">
+                    <h3>Your Score</h3>
+                    <div class="score-circle">
+                        <span id="finalScore">0</span>
+                        <span class="score-total">/<span id="totalScore">20</span></span>
+                    </div>
+                    <p id="scorePercentage"></p>
+                </div>
+
+                <div class="results-details">
+                    <p><strong>Strand:</strong> <span id="resultStrand"></span></p>
+                    <p><strong>Subject:</strong> <span id="resultSubject"></span></p>
+                    <p><strong>Mode:</strong> <span id="resultMode"></span></p>
+                    <p><strong>Time Taken:</strong> <span id="resultTime"></span></p>
+                </div>
+
+                <div class="results-actions">
+                    <button onclick="retakeQuiz()" class="retry-btn">Retake Quiz</button>
+                    <button onclick="backToDifficulty()" class="back-btn">Back to Mode Selection</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

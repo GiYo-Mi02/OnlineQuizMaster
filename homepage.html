@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizMaster</title>
+    <link rel="stylesheet" href="assets/css/homepage.css">
+    <script src="assets/js/utils/api.js" defer></script>
+    <script src="assets/js/utils/db.js" defer></script>
+    <script src="assets/js/utils/toast.js" defer></script>
+    <script src="assets/js/pages/homepage.js" defer></script>
+</head>
+<body>
+
+<!--toast-->
+<div class="toast" id="toast"></div>
+
+<!--navbar-->
+<nav class="navbar">
+    <div class="logo" onclick="showHome()">
+        <div class="logo-img"><img src="assets/images/homepage/trophy.png" onerror="this.style.display='none'"></div>
+        <span>QuizMaster</span>
+    </div>
+
+    <!--menu-->
+    <button class="mobile-menu" onclick="toggleMobileMenu()">
+        <img src="assets/images/homepage/menu.png" onerror="this.outerHTML='<span style=font-size:22px>☰</span>'">
+    </button>
+
+    <ul class="nav-links" id="navlinks">
+        <li><a href="#homepage" data-en="Home" data-fil="Tahanan">Home</a></li>
+        <li><a href="categories/index.html" data-en="Categories" data-fil="Mga Kategorya">Categories</a></li>
+        <li><a href="#tutorial" data-en="Tutorial" data-fil="Tutorial">Tutorial</a></li>
+        <li><a href="#subscription" data-en="Plans" data-fil="Mga Plano">Plans</a></li>
+        <li>
+
+            <a href="dashboard.html" onclick="return goToDashboard(event)">
+                <img src="assets/images/homepage/dashboard.png" class="dashboard-img" onerror="this.style.display='none'">
+                <span data-en="Dashboard" data-fil="Dashboard">Dashboard</span>
+            </a>
+        </li>
+    </ul>
+
+    <!--language-->
+    <div class="nav-right">
+        <div class="language" id="langToggle" onclick="toggleLanguage(event)">
+            <img src="assets/images/homepage/language.png" onerror="this.style.display='none'">
+            <span id="recentLang">EN</span>
+            <div class="select-lang" id="selectLang">
+                <button id="btnEN"  class="lang-active" onclick="setLanguage('EN',event)">🇺🇸 English</button>
+                <button id="btnFIL" onclick="setLanguage('FIL',event)">🇵🇭 Filipino</button>
+            </div>
+        </div>
+
+        <!--itimnamode-->
+         <button class="dark-toggle" id="darkToggle" onclick="toggleDarkMode()" title="Toggle dark mode" aria-label="Toggle dark mode">
+            <span class="toggle-track">
+                <span class="toggle-thumb"></span>
+            </span>
+            <span class="toggle-icon"><img id="themeIcon" src="assets/images/homepage/light.png"></span>
+        </button>
+
+        <button class="help-btn"
+            data-en="Help & Support"
+            data-fil="Tulong at Suporta"
+            onclick="handleHelpSupport()">
+            Help & Support
+        </button>
+
+        <button class="user-btn" id="userBtn" onclick="handleUserBtn()">
+            <div class="avatar-initial" id="userInitial"><img src="assets/images/homepage/profile.png"></div>
+            <span id="userBtnLabel" data-en="Log In" data-fil="Mag-log In">Log In</span>
+        </button>
+    </div>
+</nav>
+
+<!--first section-->
+<div id="homepage">
+    <section class="hero">
+        <div class="hero-content">
+            <h1 data-en="Test Your Knowledge" data-fil="Subukan ang Iyong Kaalaman">Test Your Knowledge</h1>
+            <p data-en="Dive into an exciting world of learning and fun through a variety of trivia questions and puzzles. Push your limits, compete with friends, and broaden your horizons."
+               data-fil="Sumabak sa isang kapana-panabik na mundo ng pag-aaral at kasiyahan sa pamamagitan ng iba't ibang trivia at palaisipan. Palawakin ang iyong kakayahan, makipagkumpetensya sa mga kaibigan.">
+                Dive into an exciting world of learning and fun through a variety of trivia questions and puzzles. Push your limits, compete with friends, and broaden your horizons.
+            </p>
+            <div class="hero-buttons">
+                <button class="primary" onclick="startQuiz()">
+                    <img src="assets/images/homepage/play.png" class="play-img" onerror="this.style.display='none'">
+                    <span data-en="Start Quiz" data-fil="Simulan ang Quiz">Start Quiz</span>
+                </button>
+                <button class="secondary" data-en="Browse Quizzes" data-fil="I-browse ang mga Quiz">Browse Quizzes</button>
+            </div>
+        </div>
+        <div class="visuals">
+            <div class="shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"><img src="assets/images/homepage/quescard.png" onerror="this.style.display='none'"></div>
+            </div>
+        </div>
+    </section>
+
+    <!--searchbar-->
+    <section class="search">
+        <div class="search-box">
+            <span class="search-icon"><img src="assets/images/homepage/glass.png" onerror="this.innerHTML='🔍'"></span>
+            <input type="text" id="searchInput"
+                data-en-ph="Search for quizzes, topics, or categories..."
+                data-fil-ph="Maghanap ng mga quiz, paksa, o kategorya..."
+                placeholder="Search for quizzes, topics, or categories...">
+        </div>
+    </section>
+
+    <!--categories-->
+    <section class="categories" id="categories">
+        <div class="container">
+            <div class="header">
+                <h2 data-en="Browse Quiz Categories" data-fil="I-browse ang mga Kategorya ng Quiz">Browse Quiz Categories</h2>
+                <p data-en="Choose from a wide range of subjects and put your knowledge to the test." data-fil="Pumili mula sa iba't ibang paksa at subukan ang iyong kaalaman.">Choose from a wide range of subjects and put your knowledge to the test.</p>
+            </div>
+            <div class="grid">
+                <div class="category-cards">
+                    <div class="category-icon" style="background:#e2f5f0"><img src="assets/images/homepage/stem.png" onerror="this.innerHTML='📖'"></div>
+                    <h3>Science, Technology, Engineering, and Mathematics (STEM)</h3>
+                    <p data-en="250 quizzes" data-fil="250 na quiz">250 quizzes</p>
+                </div>
+                <div class="category-cards">
+                    <div class="category-icon" style="background:#FFEEF0"><img src="assets/images/homepage/abm.png" onerror="this.innerHTML='🇵🇭'"></div>
+                    <h3>Accountancy, Business, and Management (ABM)</h3>
+                    <p data-en="220 quizzes" data-fil="220 na quiz">220 quizzes</p>
+                </div>
+                <div class="category-cards">
+                    <div class="category-icon" style="background:#f8e9d1"><img src="assets/images/homepage/humss.png" onerror="this.innerHTML='📐'"></div>
+                    <h3>Humanities and Social Sciences (HUMSS)</h3>
+                    <p data-en="180 quizzes" data-fil="180 na quiz">180 quizzes</p>
+                </div>
+                <div class="category-cards">
+                    <div class="category-icon" style="background:#f2defa"><img src="assets/images/homepage/trm.png" onerror="this.innerHTML='🔬'"></div>
+                    <h3>Tourism Management (TRM)</h3>
+                    <p data-en="320 quizzes" data-fil="320 na quiz">320 quizzes</p>
+                </div>
+                <div class="category-cards">
+                    <div class="category-icon" style="background:#E6F2FB"><img src="assets/images/homepage/cpg.png" onerror="this.innerHTML='🌏'"></div>
+                    <h3>Computer Programming (CPG)</h3>
+                    <p data-en="200 quizzes" data-fil="200 na quiz">200 quizzes</p>
+                </div>
+                <div class="category-cards">
+                    <div class="category-icon" style="background:#f5f4f3"><img src="assets/images/homepage/css.png" onerror="this.innerHTML='🎨'"></div>
+                    <h3>Computer Systems Servicing (CSS)</h3>
+                    <p data-en="190 quizzes" data-fil="190 na quiz">190 quizzes</p>
+                </div>
+                <div class="category-cards">
+                    <div class="category-icon" style="background:#faf7db"><img src="assets/images/homepage/hrs.png" onerror="this.innerHTML='💡'"></div>
+                    <h3>Hotel and Restaurant Services (HRS)</h3>
+                    <p data-en="140 quizzes" data-fil="140 na quiz">140 quizzes</p>
+                </div>
+                <div class="category-cards">
+                    <div class="category-icon" style="background:#ffefe6"><img src="assets/images/homepage/spt.png" onerror="this.innerHTML='🔧'"></div>
+                    <h3>Sports Track (SPT)</h3>
+                    <p data-en="160 quizzes" data-fil="160 na quiz">160 quizzes</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!--tuts-->
+    <section class="tutorial" id="tutorial">
+        <div class="tuts-header">
+            <h2 data-en="How It Works" data-fil="Paano Ito Gumagana">How It Works</h2>
+            <p data-en="Begin in just a few easy steps and start your learning journey today." data-fil="Magsimula sa ilang madaling hakbang at simulan ang iyong paglalakbay sa pag-aaral ngayon.">Begin in just a few easy steps and start your learning journey today.</p>
+        </div>
+        <div class="steps">
+            <div class="step-cards">
+                <div class="step-no">1</div>
+                <div class="step-icon"><img src="assets/images/homepage/step1.png" onerror="this.innerHTML='👤'"></div>
+                <h3 data-en="Create Account" data-fil="Gumawa ng Account">Create Account</h3>
+                <p data-en="Sign up for free and set up your personalized learning profile" data-fil="Mag-sign up nang libre at i-set up ang iyong personalized na profile sa pag-aaral">Sign up for free and set up your personalized learning profile</p>
+            </div>
+            <div class="step-cards">
+                <div class="step-no">2</div>
+                <div class="step-icon"><img src="assets/images/homepage/step2.png" onerror="this.innerHTML='📚'"></div>
+                <h3 data-en="Choose Category" data-fil="Pumili ng Kategorya">Choose Category</h3>
+                <p data-en="Browse through various subjects and pick your favorite topics" data-fil="I-browse ang iba't ibang paksa at piliin ang iyong mga paboritong paksa">Browse through various subjects and pick your favorite topics</p>
+            </div>
+            <div class="step-cards">
+                <div class="step-no">3</div>
+                <div class="step-icon"><img src="assets/images/homepage/step3.png" onerror="this.innerHTML='🎮'"></div>
+                <h3 data-en="Start Playing" data-fil="Magsimulang Maglaro">Start Playing</h3>
+                <p data-en="Take quizzes, answer questions, and track your progress in real-time" data-fil="Kumuha ng mga quiz, sagutin ang mga tanong, at subaybayan ang iyong progreso sa real-time">Take quizzes, answer questions, and track your progress in real-time</p>
+            </div>
+            <div class="step-cards">
+                <div class="step-no">4</div>
+                <div class="step-icon"><img src="assets/images/homepage/step4.png" onerror="this.innerHTML='🏆'"></div>
+                <h3 data-en="Earn Rewards" data-fil="Kumita ng mga Gantimpala">Earn Rewards</h3>
+                <p data-en="Collect badges, climb leaderboards, and compete with friends" data-fil="Mangolekta ng mga badge, umakyat sa leaderboard, at makipagkumpetensya sa mga kaibigan">Collect badges, climb leaderboards, and compete with friends</p>
+            </div>
+        </div>
+    </section>
+
+    <!--reviews-->
+    <section class="reviews">
+        <div class="reviews-container">
+            <div class="review-header">
+                <h2 data-en="Trusted by Learners Across the Globe" data-fil="Pinagkakatiwalaan ng mga Mag-aaral sa Buong Mundo">Trusted by Learners Across the Globe</h2>
+                <p data-en="Become part of a growing community of learners improving their knowledge every day" data-fil="Maging bahagi ng lumalaking komunidad ng mga mag-aaral na nagpapabuti ng kanilang kaalaman araw-araw">Become part of a growing community of learners improving their knowledge every day</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stats-card">
+                    <div class="stats-icon"><img src="assets/images/homepage/active.png" onerror="this.innerHTML='👥'"></div>
+                    <div class="stats-number">500k+</div>
+                    <div class="stats-label" data-en="Active Learners" data-fil="Mga Aktibong Mag-aaral">Active Learners</div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-icon"><img src="assets/images/homepage/available.png" onerror="this.innerHTML='📝'"></div>
+                    <div class="stats-number">50k+</div>
+                    <div class="stats-label" data-en="Quizzes Available" data-fil="Mga Available na Quiz">Quizzes Available</div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-icon"><img src="assets/images/homepage/rating.png" onerror="this.innerHTML='⭐'"></div>
+                    <div class="stats-number">4.6/5</div>
+                    <div class="stats-label" data-en="Average Rating" data-fil="Karaniwang Rating">Average Rating</div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-icon"><img src="assets/images/homepage/satisfaction.png" onerror="this.innerHTML='😊'"></div>
+                    <div class="stats-number">98%</div>
+                    <div class="stats-label" data-en="Learners Satisfaction" data-fil="Kasiyahan ng mga Mag-aaral">Learners Satisfaction</div>
+                </div>
+            </div>
+
+            <div class="review-header">
+                <h2 data-en="What Our Users Say" data-fil="Ano ang Sinasabi ng Aming mga Gumagamit">What Our Users Say</h2>
+                <p data-en="Feedback from our Learners" data-fil="Feedback mula sa aming mga Mag-aaral">Feedback from our Learners</p>
+            </div>
+
+            <!--review grid-->
+            <div class="thoughts-grid" id="reviewsGrid">
+                <div class="thoughts-card">
+                    <div>
+                        <div class="rating-icon"><img src="assets/images/homepage/stars.png" onerror="this.outerHTML='<span style=color:#F6C343;font-size:1.1rem>★★★★★</span>'"></div>
+                        <p class="thoughts">"This website really helped me understand lessons that I used to struggle with. The layout is simple, and everything is easy to find. I've become more confident in answering quizzes."</p>
+                    </div>
+                    <div class="user-review">
+                        <div class="user-avatar"><img src="assets/images/homepage/girl.png" onerror="this.style.display='none'"></div>
+                        <div class="user-info">
+                            <h4>Mikaela Woods</h4>
+                            <p data-en="Grade 8 High School Student" data-fil="Mag-aaral sa Grade 8">Grade 8 High School Student</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="thoughts-card">
+                    <div>
+                        <div class="rating-icon"><img src="assets/images/homepage/stars.png" onerror="this.outerHTML='<span style=color:#F6C343;font-size:1.1rem>★★★★★</span>'"></div>
+                        <p class="thoughts">"I like using this website when I study because it makes learning feel less stressful. It's convenient, and I can review anytime. It definitely helped me improve my performance in school."</p>
+                    </div>
+                    <div class="user-review">
+                        <div class="user-avatar"><img src="assets/images/homepage/boy.png" onerror="this.style.display='none'"></div>
+                        <div class="user-info">
+                            <h4>Rafael Chen</h4>
+                            <p data-en="Grade 10 High School Student" data-fil="Mag-aaral sa Grade 10">Grade 10 High School Student</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="thoughts-card">
+                    <div>
+                        <div class="rating-icon"><img src="assets/images/homepage/graph.png" onerror="this.outerHTML='<span style=color:#F6C343;font-size:1.1rem>★★★★☆</span>'"></div>
+                        <p class="thoughts">"As a teacher, I find this platform very helpful for supporting my students' learning. The resources are well-organized, and it makes reviewing topics more engaging and accessible."</p>
+                    </div>
+                    <div class="user-review">
+                        <div class="user-avatar"><img src="assets/images/homepage/teacher.png" onerror="this.style.display='none'"></div>
+                        <div class="user-info">
+                            <h4>Emily Rodriguez</h4>
+                            <p data-en="Grade 10 Teacher" data-fil="Guro sa Grade 10">Grade 10 Teacher</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--add review-->
+            <div class="add-review-wrap">
+                <h3 data-en="Share Your Experience" data-fil="Ibahagi ang Iyong Karanasan">Share Your Experience</h3>
+                <p class="sub" data-en="Your feedback helps other learners discover the best resources." data-fil="Ang iyong feedback ay tumutulong sa ibang mga mag-aaral na matuklasan ang pinakamahusay na mga mapagkukunan.">Your feedback helps other learners discover the best resources.</p>
+                <div id="reviewFormArea"></div>
+            </div>
+
+            <div class="trust-content">
+                <div class="badge"><img src="assets/images/homepage/badge.png" onerror="this.style.display='none'"><span data-en="Secure & Safe"    data-fil="Ligtas at Sigurado">Secure & Safe</span></div>
+                <div class="badge"><img src="assets/images/homepage/verified.png" onerror="this.style.display='none'"><span data-en="Verified Content" data-fil="Verified na Nilalaman">Verified Content</span></div>
+                <div class="badge"><img src="assets/images/homepage/award.png" onerror="this.style.display='none'"><span data-en="Award Winning"    data-fil="Nanalo ng Parangal">Award Winning</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!--subscription-->
+    <section class="subscription" id="subscription">
+        <div class="subs-header">
+            <h2 data-en="Choose Your Plan" data-fil="Piliin ang Iyong Plano">Choose Your Plan</h2>
+            <p data-en="Select the perfect plan for your learning journey" data-fil="Piliin ang perpektong plano para sa iyong paglalakbay sa pag-aaral">Select the perfect plan for your learning journey</p>
+        </div>
+        <div class="subs-grid">
+            <div class="subs-card">
+                <div class="icon-box"><img src="assets/images/homepage/free.png" onerror="this.innerHTML='🆓'"></div>
+                <h3 class="name" data-en="Free" data-fil="Libre">Free</h3>
+                <p class="descript" data-en="Perfect for beginners" data-fil="Perpekto para sa mga baguhan">Perfect for beginners</p>
+                <div class="price">₱0 <span data-en="/ forever" data-fil="/ magpakailanman">/ forever</span></div>
+                <ul class="features">
+                    <li><span class="check">✔</span><span data-en="10 quizzes per day" data-fil="10 quiz bawat araw">10 quizzes per day</span></li>
+                    <li><span class="check">✔</span><span data-en="Basic subjects" data-fil="Mga pangunahing paksa">Basic subjects</span></li>
+                    <li><span class="check">✔</span><span data-en="Progress Tracking" data-fil="Pagsubaybay ng Progreso">Progress Tracking</span></li>
+                    <li><span class="check">✔</span><span data-en="Mobile app access" data-fil="Access sa mobile app">Mobile app access</span></li>
+                    <li><span class="check">✔</span><span data-en="Community Support" data-fil="Suporta ng Komunidad">Community Support</span></li>
+                </ul>
+                <button class="plan-btn" data-en="Get Started" data-fil="Magsimula">Get Started</button>
+            </div>
+            <div class="subs-card featured">
+                <div class="subs-badge" data-en="Most Popular" data-fil="Pinaka-popular">Most Popular</div>
+                <div class="icon-box"><img src="assets/images/homepage/pro.png" onerror="this.innerHTML='⭐'"></div>
+                <h3 class="name">Pro</h3>
+                <p class="descript" data-en="Most popular choice" data-fil="Pinaka-popular na pagpipilian">Most popular choice</p>
+                <div class="price">₱199 <span data-en="/ per month" data-fil="/ bawat buwan">/ per month</span></div>
+                <ul class="features">
+                    <li><span class="check">✔</span><span data-en="Unlimited quizzes" data-fil="Walang limitasyong quiz">Unlimited quizzes</span></li>
+                    <li><span class="check">✔</span><span data-en="All subjects & categories" data-fil="Lahat ng paksa at kategorya">All subjects & categories</span></li>
+                    <li><span class="check">✔</span><span data-en="Advanced analytics" data-fil="Advanced na analytics">Advanced analytics</span></li>
+                    <li><span class="check">✔</span><span data-en="No ads" data-fil="Walang ads">No ads</span></li>
+                    <li><span class="check">✔</span><span data-en="Priority support" data-fil="Priority na suporta">Priority support</span></li>
+                </ul>
+                <button class="plan-btn primary" data-en="Start Free Trial" data-fil="Simulan ang Libreng Trial">Start Free Trial</button>
+            </div>
+            <div class="subs-card">
+                <div class="icon-box"><img src="assets/images/homepage/premium.png" onerror="this.innerHTML='💎'"></div>
+                <h3 class="name" data-en="Premium" data-fil="Premium">Premium</h3>
+                <p class="descript" data-en="For serious learners" data-fil="Para sa mga seryosong mag-aaral">For serious learners</p>
+                <div class="price">₱399 <span data-en="/ per month" data-fil="/ bawat buwan">/ per month</span></div>
+                <ul class="features">
+                    <li><span class="check">✔</span><span data-en="Everything in Pro" data-fil="Lahat ng nasa Pro">Everything in Pro</span></li>
+                    <li><span class="check">✔</span><span data-en="Personal AI tutor" data-fil="Personal na AI tutor">Personal AI tutor</span></li>
+                    <li><span class="check">✔</span><span data-en="1-on-1 coaching sessions" data-fil="1-on-1 na coaching sessions">1-on-1 coaching sessions</span></li>
+                    <li><span class="check">✔</span><span data-en="Exclusive content" data-fil="Eksklusibong nilalaman">Exclusive content</span></li>
+                    <li><span class="check">✔</span><span data-en="Certificate programs" data-fil="Mga programa ng sertipiko">Certificate programs</span></li>
+                </ul>
+                <button class="plan-btn" data-en="Go Premium" data-fil="Pumili ng Premium">Go Premium</button>
+            </div>
+        </div>
+        <div class="bottom">
+            <div class="guarantee">
+                <img src="assets/images/homepage/check.png" onerror="this.innerHTML='✔'">
+                <span data-en="30-day money-back guarantee • Cancel anytime" data-fil="30-araw na money-back guarantee • Kanselahin anumang oras">30-day money-back guarantee • Cancel anytime</span>
+            </div>
+        </div>
+    </section>
+
+    <!--footer-->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="about">
+                <h3><span class="trophy"><img src="assets/images/homepage/trophy.png" onerror="this.style.display='none'"></span>QuizMaster</h3>
+                <p data-en="QuizMaster is a comprehensive online learning platform that makes education fun and engaging through interactive quizzes and gamified learning experiences."
+                   data-fil="Ang QuizMaster ay isang komprehensibong online na platform sa pag-aaral na ginagawang masaya at nakaka-engganyo ang edukasyon sa pamamagitan ng mga interactive na quiz at gamified na karanasan.">
+                   QuizMaster is a comprehensive online learning platform that makes education fun and engaging through interactive quizzes and gamified learning experiences.
+                </p>
+                <div class="social-links">
+                    <a href="#" class="social-link"><img src="assets/images/homepage/fb.png" onerror="this.innerHTML='f'"></a>
+                    <a href="#" class="social-link"><img src="assets/images/homepage/twitter.png" onerror="this.innerHTML='t'"></a>
+                    <a href="#" class="social-link"><img src="assets/images/homepage/ig.png" onerror="this.innerHTML='ig'"></a>
+                    <a href="#" class="social-link"><img src="assets/images/homepage/yt.png" onerror="this.innerHTML='yt'"></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h4 data-en="Quick Links" data-fil="Mabilis na Mga Link">Quick Links</h4>
+                <ul>
+                    <li><a href="#homepage"    data-en="Home" data-fil="Tahanan">Home</a></li>
+                    <li><a href="#categories"  data-en="Categories" data-fil="Mga Kategorya">Categories</a></li>
+                    <li><a href="#tutorial"    data-en="Tutorial" data-fil="Tutorial">Tutorial</a></li>
+                    <li><a href="#subscription" data-en="Pricing" data-fil="Presyo">Pricing</a></li>
+                    <li><a href="#" data-en="FAQ" data-fil="FAQ">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4 data-en="Legal" data-fil="Legal">Legal</h4>
+                <ul>
+                    <li><a href="#" data-en="Help Center" data-fil="Help Center">Help Center</a></li>
+                    <li><a href="#" data-en="Privacy Policy" data-fil="Patakaran sa Privacy">Privacy Policy</a></li>
+                    <li><a href="#" data-en="Terms of Service" data-fil="Mga Tuntunin ng Serbisyo">Terms of Service</a></li>
+                    <li><a href="#" data-en="Cookie Policy" data-fil="Patakaran sa Cookie">Cookie Policy</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="contact">
+                <h4 data-en="Contact Us" data-fil="Makipag-ugnayan sa Amin">Contact Us</h4>
+                <div class="contact-item"><span class="contact-icon"><img src="assets/images/homepage/mail.png" onerror="this.style.display='none'"></span><span>support@quizmaster.com</span></div>
+                <div class="contact-item"><span class="contact-icon"><img src="assets/images/homepage/phone.png" onerror="this.style.display='none'"></span><span>+1 (555) 123-4567</span></div>
+                <div class="contact-item"><span class="contact-icon"><img src="assets/images/homepage/map.png" onerror="this.style.display='none'"></span><span>123 Learning Street, Education City, EC 12345</span></div>
+            </div>
+        </div>
+        <div class="bottom">
+            <p data-en="© 2026 QuizMaster. All rights reserved. Made with ❤️ for learners worldwide."
+               data-fil="© 2026 QuizMaster. Lahat ng karapatan ay nakalaan. Ginawa nang may ❤️ para sa mga mag-aaral sa buong mundo.">
+               © 2026 QuizMaster. All rights reserved. Made with ❤️ for learners worldwide.
+            </p>
+            <div class="bottom-links">
+                <a href="#" data-en="Accessibility" data-fil="Accessibility">Accessibility</a>
+                <a href="#" data-en="Sitemap" data-fil="Sitemap">Sitemap</a>
+                <a href="#" data-en="Legal" data-fil="Legal">Legal</a>
+            </div>
+        </div>
+    </footer>
+</div>
+</body>
+</html>

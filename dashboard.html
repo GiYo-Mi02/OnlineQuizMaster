@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <script src="assets/js/utils/api.js" defer></script>
+    <script src="assets/js/utils/db.js" defer></script>
+    <script src="assets/js/utils/toast.js" defer></script>
+    <script src="assets/js/pages/dashboard.js" defer></script>
+    <title>QuizMaster</title>
+</head>
+<body>
+<!--toast-->
+<div class="toast" id="toast"></div>
+    <div class="svg-tooltip" id="svgTip"></div>
+
+    <!--navbar-->
+    <nav class="navbar">
+        <a class="logo" href="homepage.html">
+            <div class="logo-img"><img src="assets/images/homepage/trophy.png" onerror="this.style.display='none'"></div>
+            <span>QuizMaster</span>
+        </a>
+        
+        <button class="mobile-menu" onclick="toggleMenu()">
+            <img src="assets/images/homepage/menu.png" onerror="this.outerHTML='<span style=font-size:22px>☰</span>'">
+        </button>
+
+        <ul class="nav-links" id="navlinks">
+            <li><a href="homepage.html" data-en="Home" data-fil="Tahanan">Home</a></li>
+            <li><a href="categories/index.html" data-en="Categories" data-fil="Mga Kategorya">Categories</a></li>
+            <li><a href="homepage.html#tutorial" data-en="Tutorial" data-fil="Tutorial">Tutorial</a></li>
+            <li><a href="homepage.html#subscription" data-en="Plans" data-fil="Mga Plano">Plans</a></li>
+            <li>
+                <a href="dashboard.html" class="active-link">
+                    <img src="assets/images/homepage/dashboard.png" class="dashboard-img" onerror="this.style.display='none'">
+                    <span data-en="Dashboard" data-fil="Dashboard">Dashboard</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="nav-right">
+            <div class="language" id="langToggle" onclick="toggleLanguage(event)">
+                <img src="assets/images/homepage/language.png" onerror="this.style.display='none'">
+                <span id="recentLang">EN</span>
+                <div class="select-lang" id="selectLang">
+                    <button id="btnEN"  class="lang-active" onclick="setLanguage('EN',event)">🇺🇸 English</button>
+                    <button id="btnFIL" onclick="setLanguage('FIL',event)">🇵🇭 Filipino</button>
+                </div>
+            </div>
+
+            <button class="help-btn" id="helpBtn" onclick="handleHelpSupport()">Help & Support</button>
+
+            <button class="user-btn" id="userBtn" onclick="handleUserBtn()">
+                <div class="avatar-initial" id="userInitial">👤</div>
+                <span id="userBtnLabel" data-en="Sign Up" data-fil="Mag-sign Up">Sign Up</span>
+            </button>
+        </div>
+    </nav>
+
+    <!--locked-->
+    <div class="locked-screen" id="lockedScreen">
+        <div class="lock-icon">🔒</div>
+        <h2 id="lockTitle">Dashboard Locked</h2>
+        <p id="lockDesc">Please sign in on the homepage to view your personal learning dashboard, stats, and progress.</p>
+        <a class="go-btn" href="homepage.html" id="lockBtn">Go to Homepage →</a>
+    </div>
+
+    <!--dashboard-->
+    <div class="dashboard-wrap" id="dashboardWrap">
+
+        <div class="dashboard-header">
+            <h1 id="welcomeMsg">Welcome Back!</h1>
+            <p id="welcomeSub" data-en="Here's your learning progress overview." data-fil="Narito ang iyong pangkalahatang-ideya ng progreso sa pag-aaral.">Here's your learning progress overview.</p>
+        </div>
+
+        <!--stats-->
+        <div class="stats" id="statsGrid"></div>
+        <div class="dashboard-content" id="dashContent">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 data-en="Performance by Subject" data-fil="Pagganap ayon sa Paksa">Performance by Subject</h3>
+                </div>
+                <div class="chart-container" id="barChartContainer"></div>
+            </div>
+
+            <!--chart-->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 data-en="Weekly Activity" data-fil="Lingguhang Aktibidad">Weekly Activity</h3>
+                </div>
+                <div class="chart-container" id="lineChartContainer"></div>
+            </div>
+
+            <!--assessment-->
+            <div class="recent-assessments">
+                <div class="chart-header">
+                    <img src="assets/images/dashboard/b1.png" onerror="this.outerHTML='<span style=font-size:1.2rem>📋</span>'">
+                    <h3 data-en="Recent Assessments" data-fil="Mga Kamakailang Pagtatasa">Recent Assessments</h3>
+                </div>
+                <div class="assessment-list" id="assessmentList"></div>
+            </div>
+
+            <!--return-->
+            <div class="back-row">
+                <button class="back-to-home" onclick="window.location.href='homepage.html'" id="backBtn">
+                    ← <span data-en="Return to Home" data-fil="Bumalik sa Tahanan">Return to Home</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!--footer-->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="about">
+                <h3><span class="trophy"><img src="assets/images/homepage/trophy.png" onerror="this.style.display='none'"></span>QuizMaster</h3>
+                <p data-en="QuizMaster is a comprehensive online learning platform that makes education fun and engaging through interactive quizzes and gamified learning experiences."
+                data-fil="Ang QuizMaster ay isang komprehensibong online na platform sa pag-aaral na ginagawang masaya at nakaka-engganyo ang edukasyon sa pamamagitan ng mga interactive na quiz.">
+                QuizMaster is a comprehensive online learning platform that makes education fun and engaging through interactive quizzes and gamified learning experiences.
+                </p>
+                <div class="social-links">
+                    <a href="#" class="social-link"><img src="assets/images/homepage/fb.png"      onerror="this.innerHTML='f'"></a>
+                    <a href="#" class="social-link"><img src="assets/images/homepage/twitter.png" onerror="this.innerHTML='t'"></a>
+                    <a href="#" class="social-link"><img src="assets/images/homepage/ig.png"      onerror="this.innerHTML='ig'"></a>
+                    <a href="#" class="social-link"><img src="assets/images/homepage/yt.png"      onerror="this.innerHTML='yt'"></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h4 data-en="Quick Links" data-fil="Mabilis na Mga Link">Quick Links</h4>
+                <ul>
+                    <li><a href="homepage.html"              data-en="Home"       data-fil="Tahanan">Home</a></li>
+                    <li><a href="categories/index.html"       data-en="Categories" data-fil="Mga Kategorya">Categories</a></li>
+                    <li><a href="homepage.html#tutorial"      data-en="Tutorial"   data-fil="Tutorial">Tutorial</a></li>
+                    <li><a href="homepage.html#subscription"  data-en="Pricing"    data-fil="Presyo">Pricing</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4 data-en="Legal" data-fil="Legal">Legal</h4>
+                <ul>
+                    <li><a href="#" data-en="Help Center"      data-fil="Help Center">Help Center</a></li>
+                    <li><a href="#" data-en="Privacy Policy"   data-fil="Patakaran sa Privacy">Privacy Policy</a></li>
+                    <li><a href="#" data-en="Terms of Service" data-fil="Mga Tuntunin ng Serbisyo">Terms of Service</a></li>
+                    <li><a href="#" data-en="Cookie Policy"    data-fil="Patakaran sa Cookie">Cookie Policy</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="contact">
+                <h4 data-en="Contact Us" data-fil="Makipag-ugnayan sa Amin">Contact Us</h4>
+                <div class="contact-item"><span class="contact-icon"><img src="assets/images/homepage/mail.png"  onerror="this.style.display='none'"></span><span>support@quizmaster.com</span></div>
+                <div class="contact-item"><span class="contact-icon"><img src="assets/images/homepage/phone.png" onerror="this.style.display='none'"></span><span>+1 (555) 123-4567</span></div>
+                <div class="contact-item"><span class="contact-icon"><img src="assets/images/homepage/map.png"   onerror="this.style.display='none'"></span><span>123 Learning Street, Education City, EC 12345</span></div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p data-en="© 2026 QuizMaster. All rights reserved. Made with ❤️ for learners worldwide."
+            data-fil="© 2026 QuizMaster. Lahat ng karapatan ay nakalaan. Ginawa nang may ❤️ para sa mga mag-aaral sa buong mundo.">
+            © 2026 QuizMaster. All rights reserved. Made with ❤️ for learners worldwide.
+            </p>
+            <div class="bottom-links">
+                <a href="#" data-en="Accessibility" data-fil="Accessibility">Accessibility</a>
+                <a href="#" data-en="Sitemap"       data-fil="Sitemap">Sitemap</a>
+                <a href="#" data-en="Legal"         data-fil="Legal">Legal</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

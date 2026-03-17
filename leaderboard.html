@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="stylesheet" href="assets/css/leaderboard.css">
+<script src="assets/js/utils/api.js" defer></script>
+<script src="assets/js/utils/db.js" defer></script>
+<script src="assets/js/utils/toast.js" defer></script>
+<script src="assets/js/pages/leaderboard.js" defer></script>
+<title>Leaderboard</title>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-logo">Quiz<span class="accent">M</span>aster</div>
+  <ul class="navbar-links">
+    <li><a href="homepage.html">Home</a></li>
+    <li><a href="categories/index.html">Categories</a></li>
+    <li><a href="homepage.html#tutorial">Tutorial</a></li>
+    <li><a href="homepage.html#subscription">Plans</a></li>
+    <li><a href="dashboard.html" class="active">Dashboard</a></li>
+  </ul>
+  <div class="navbar-right">
+    <button class="btn-ghost">Find a student</button>
+    <button class="btn-fill">Sign In</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="breadcrumb">
+      <a href="homepage.html">Home</a><span>&rsaquo;</span>
+      <a href="categories/index.html">Categories</a><span>&rsaquo;</span>
+      <a href="#">Mathematics</a><span>&rsaquo;</span>
+      <span style="color:rgba(255,255,255,0.85)">Leaderboard</span>
+    </div>
+    <div class="hero-title">LEADERBOARD</div>
+    <div class="hero-sub">Mathematics &nbsp;·&nbsp; Grade 10 &nbsp;·&nbsp; Chapter 3 Quiz &nbsp;·&nbsp; 10 Questions</div>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('top10',this)"><img src="assets/images/leaderboard/Trophy Icon.png" alt="Trophy Icon" width="20px" height="20px"> Top 10</button>
+      <button class="tab-btn" onclick="switchTab('full',this)"><img src="assets/images/leaderboard/Leaderboard Icon.png" alt="Leaderboard Icon" width="20px" height="25px"> Full Leaderboard</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="content">
+
+    <!-- TAB: TOP 10 -->
+    <div id="tab-top10">
+      <div class="sec-head">
+        <div class="sec-title">
+          <div class="sec-icon si-gold"><img src="assets/images/leaderboard/Trophy Icon.png" alt="Trophy Icon" width="20px" height="20px"></div>
+          Top 10 Players
+        </div>
+        <span class="sec-note">Ranked by highest score</span>
+      </div>
+      <div class="lb-card">
+        <div class="lb-card-head">
+          <span class="lb-card-title">Top 10 Board</span>
+          <span class="lb-card-sub">Mathematics · Chapter 3 Quiz</span>
+        </div>
+        <div class="col-row top10-cols">
+          <span class="col-lbl c">Rank</span>
+          <span class="col-lbl">Name</span>
+          <span class="col-lbl c">Score</span>
+          <span class="col-lbl c">Pct</span>
+          <span class="col-lbl r" style="padding-right:6px;">Streaks</span>
+        </div>
+        <div id="top10List"></div>
+      </div>
+    </div>
+
+    <!-- TAB: FULL LB -->
+    <div id="tab-full" style="display:none">
+      <div class="sec-head">
+        <div class="sec-title">
+          <div class="sec-icon si-teal">📋</div>
+          Full Leaderboard
+        </div>
+        <div style="background:var(--teal-main);padding:6px 14px;border-radius:10px;display:flex;align-items:center;gap:8px;">
+          <span class="sort-lbl">Sort by</span>
+          <select id="sortSel" onchange="renderFull()">
+            <option value="score">Score</option>
+            <option value="streak">Streak</option>
+            <option value="name">Name</option>
+          </select>
+        </div>
+      </div>
+      <div class="lb-card">
+        <div class="lb-card-head">
+          <span class="lb-card-title">To Leaderboard</span>
+          <span class="lb-card-sub">All participants</span>
+        </div>
+        <div class="col-row full-cols">
+          <span class="col-lbl">Name</span>
+          <span class="col-lbl c">Score</span>
+          <span class="col-lbl c">Pct</span>
+          <span class="col-lbl c">Streaks</span>
+          <span class="col-lbl c">Review</span>
+        </div>
+        <div id="fullList"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+  <div class="modal" id="modal">
+
+    <div class="modal-top">
+      <div class="modal-player">
+        <div class="modal-av" id="mAv">A</div>
+        <div>
+          <div class="modal-pname" id="mName">Player</div>
+          <div class="modal-prole">Student</div>
+        </div>
+      </div>
+      <button class="modal-x" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="quiz-block">
+        <div class="quiz-text">
+          <div class="quiz-main-title">Quiz Title</div>
+          <div class="quiz-sub-lbl" id="mSubject">Mathematics · Grade 10</div>
+          <div class="chips">
+            <span class="chip ch-green">✓ Finished</span>
+            <span class="chip ch-gray" id="mDate">📅 June 30, 2026</span>
+            <span class="chip ch-gray">📝 10 Questions</span>
+            <span class="chip ch-gray">⏱ 13:00 – 14:00</span>
+          </div>
+          <div class="cw-row">
+            <div class="cw-item"><span>✅</span> Correct: <strong id="mCorrect">9</strong></div>
+            <div class="cw-item"><span>❌</span> Wrong: <strong id="mWrong">1</strong></div>
+            <div class="cw-item"><span>⭐</span> Points: <strong id="mPoints">9</strong></div>
+          </div>
+        </div>
+        <div class="donut-wrap">
+          <div class="donut">
+            <div class="d-pct" id="mPct">90%</div>
+            <div class="d-frac" id="mFrac">9/10</div>
+          </div>
+          <div class="d-lbl" id="mLbl">Amazing!</div>
+        </div>
+      </div>
+
+      <div class="q-sec-title">Question Breakdown</div>
+      <div id="qList"></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+
+

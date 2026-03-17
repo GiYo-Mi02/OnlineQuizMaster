@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/login.css">
+    <script src="assets/js/utils/api.js" defer></script>
+    <script src="assets/js/utils/db.js" defer></script>
+    <script src="assets/js/utils/toast.js" defer></script>
+    <script src="assets/js/pages/login.js" defer></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+   <title>QuizMaster</title>
+</head>
+<body>
+    <!--navbar-->
+    <div class="toast" id="toast"></div>
+    <nav class="navbar">
+        <a class="logo" href="homepage.html">
+            <div class="logo-img">
+                <img src="assets/images/homepage/trophy.png" onerror="this.style.display='none'">
+            </div>
+            <span>QuizMaster</span>
+        </a>
+
+        <!--language-->
+        <div class="nav-right">
+            <div class="language" id="langToggle" onclick="toggleLanguage(event)">
+                <img src="assets/images/homepage/language.png" onerror="this.style.display='none'">
+                <span id="recentLang">EN</span>
+                <div class="select-lang" id="selectLang">
+                    <button id="btnEN"  class="lang-active" onclick="setLanguage('EN',event)">🇺🇸 English</button>
+                    <button id="btnFIL" onclick="setLanguage('FIL',event)">🇵🇭 Filipino</button>
+                </div>
+            </div>
+            <button class="help-btn" onclick="toast('Contact: support@quizmaster.com')" data-en="Help & Support" data-fil="Tulong at Suporta">Help & Support</button>
+        </div>
+    </nav>
+
+    <div class="auth-page">
+        <div class="auth-left">
+            <div class="deco-shapes">
+                <div class="deco-circle"></div>
+                <div class="deco-circle"></div>
+                <div class="deco-circle"></div>
+            </div>
+
+            <div class="brand-badge">
+                <img src="assets/images/homepage/trophy.png" onerror="this.style.display='none'">
+                <span>QuizMaster</span>
+            </div>
+
+            <h2 data-en="Learn Smarter,<br>Not Harder." data-fil="Matuto nang Mas Matalino,<br>Hindi Mas Mahirap.">Learn Smarter,<br>Not Harder.</h2>
+            <p data-en="Join thousands of Filipino students and teachers who use QuizMaster every day to study, practice, and grow." data-fil="Samahan ang libu-libong mag-aaral at guro na gumagamit ng QuizMaster araw-araw para mag-aral, magsanay, at lumago.">
+                Join thousands of Filipino students and teachers who use QuizMaster every day to study, practice, and grow.
+            </p>
+
+            <div class="auth-stats">
+                <div class="auth-stat">
+                    <div class="num">500k+</div>
+                    <div class="lbl" data-en="Active Learners" data-fil="Mga Mag-aaral">Active Learners</div>
+                </div>
+                <div class="auth-stat">
+                    <div class="num">50k+</div>
+                    <div class="lbl" data-en="Quizzes Available" data-fil="Mga Available na Quiz">Quizzes</div>
+                </div>
+                <div class="auth-stat">
+                    <div class="num">4.6⭐</div>
+                    <div class="lbl" data-en="Average Rating" data-fil="Karaniwang Rating">Rating</div>
+                </div>
+                <div class="auth-stat">
+                    <div class="num">98%</div>
+                    <div class="lbl" data-en="Satisfaction" data-fil="Kasiyahan">Satisfaction</div>
+                </div>
+            </div>
+        </div>
+
+        <!--forms-->
+        <div class="auth-right">
+            <div class="auth-card">
+
+                <!--switch-->
+                <div class="auth-tabs">
+                    <button class="auth-tab active" id="tabSignup" onclick="switchTab('signup')" data-en="Create Account" data-fil="Mag-sign Up">Create Account</button>
+                    <button class="auth-tab"        id="tabLogin"  onclick="switchTab('login')"  data-en="Sign In"        data-fil="Mag-log In">Sign In</button>
+                </div>
+
+                <!--signup page-->
+                <div class="form-panel active" id="panelSignup">
+
+                    <div class="form-heading">
+                        <h2 data-en="Create your account" data-fil="Gumawa ng iyong account">Create your account</h2>
+                        <p data-en="It's free and takes less than a minute." data-fil="Libre at mas mababa sa isang minuto.">It's free and takes less than a minute.</p>
+                    </div>
+
+                    <!--socials-->
+                    <div class="social-row">
+                        <button class="social-btn" onclick="socialLogin('Google')">
+                            <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-3.59-13.46-8.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                            <span data-en="Continue with Google" data-fil="Google ang gamitin">Continue with Google</span>
+                        </button>
+                        <button class="social-btn" onclick="socialLogin('Facebook')" style="border-color:#1877F2;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073c0 6.027 4.388 11.025 10.125 11.927v-8.437H7.078v-3.49h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.49h-2.796v8.437C19.612 23.098 24 18.1 24 12.073z"/></svg>
+                            <span data-en="Continue with Facebook" data-fil="Facebook ang gamitin">Continue with Facebook</span>
+                        </button>
+                    </div>
+
+                    <div class="divider" data-en="or register with email" data-fil="o mag-register gamit ang email">or register with email</div>
+
+                    <!--forms-->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label data-en="Username" data-fil="Username">Username</label>
+                            <div class="input-wrap">
+                                <input type="text" id="su_username"
+                                    data-en-ph="e.g. JuanDoe123" data-fil-ph="hal. JuanDoe123"
+                                    placeholder="e.g. JuanDoe123">
+                            </div>
+                            <div class="field-error" id="err_username"></div>
+                        </div>
+                        <div class="form-group">
+                            <label data-en="Country" data-fil="Bansa">Country</label>
+                            <div class="input-wrap select-wrapper">
+                                <select id="su_country">
+                                    <option value="" disabled selected data-en="Select country" data-fil="Piliin ang bansa">Select country</option>
+                                </select>
+                            </div>
+                            <div class="field-error" id="err_country"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label data-en="Email Address" data-fil="Email Address">Email Address</label>
+                        <div class="input-wrap">
+                            <input type="email" id="su_email"
+                                data-en-ph="you@example.com" data-fil-ph="ikaw@example.com"
+                                placeholder="you@example.com">
+                        </div>
+                        <div class="field-error" id="err_email"></div>
+                    </div>
+
+                    <!--password-->
+                    <div class="form-group">
+                        <label data-en="Password" data-fil="Password">Password</label>
+                        <div class="input-wrap">
+                            <input type="password" id="su_password"
+                                data-en-ph="At least 12 characters" data-fil-ph="Hindi bababa sa 12 karakter"
+                                placeholder="At least 12 characters"
+                                oninput="checkPasswordStrength()">
+                            <button type="button" class="eye-btn" onclick="toggleEye('su_password', this)">👁</button>
+                        </div>
+
+                        <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+                        <div class="strength-label" id="strengthLabel"></div>
+                        
+                        <!--requirements-->
+                        <div class="req-box" id="reqBox">
+                            <div class="req invalid" id="r_len"><span class="icon">✖</span> <span data-en="At least 12 characters" data-fil="Hindi bababa sa 12 karakter">At least 12 characters</span></div>
+                            <div class="req invalid" id="r_up"> <span class="icon">✖</span> <span data-en="One uppercase letter"   data-fil="Isang malaking titik">One uppercase letter</span></div>
+                            <div class="req invalid" id="r_num"><span class="icon">✖</span> <span data-en="One number"             data-fil="Isang numero">One number</span></div>
+                            <div class="req invalid" id="r_sym"><span class="icon">✖</span> <span data-en="One special character"  data-fil="Isang espesyal na karakter">One special character</span></div>
+                        </div>
+                        <div class="field-error" id="err_password"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label data-en="Confirm Password" data-fil="Kumpirmahin ang Password">Confirm Password</label>
+                        <div class="input-wrap">
+                            <input type="password" id="su_confirm"
+                                data-en-ph="Re-enter your password" data-fil-ph="Ilagay muli ang iyong password"
+                                placeholder="Re-enter your password"
+                                oninput="checkConfirm()">
+                            <button type="button" class="eye-btn" onclick="toggleEye('su_confirm', this)">👁</button>
+                        </div>
+                        <div class="match-msg" id="matchMsg"></div>
+                        <div class="field-error" id="err_confirm"></div>
+                    </div>
+
+                    <div class="captcha-wrap">
+                        <div class="g-recaptcha"
+                            id="recaptcha-signup"
+                            data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                            data-callback="onSignupCaptcha"
+                            data-expired-callback="onCaptchaExpired">
+                        </div>
+                        <div class="captcha-error" id="err_captcha_signup"
+                            data-en="Please complete the CAPTCHA to continue."
+                            data-fil="Mangyaring kumpletuhin ang CAPTCHA upang magpatuloy.">
+                            Please complete the CAPTCHA to continue.
+                        </div>
+                    </div>
+
+                    <button class="submit-btn" onclick="handleSignup()" id="btn_signup" data-en="Create Account" data-fil="Gumawa ng Account">Create Account</button>
+
+                    <div class="switch-link">
+                        <span data-en="Already have an account?" data-fil="Mayroon ka nang account?">Already have an account?</span>
+                        <button onclick="switchTab('login')" data-en="Sign in here" data-fil="Mag-sign in dito">Sign in here</button>
+                    </div>
+                </div>
+
+                <!--another panel-->
+                <div class="form-panel" id="panelLogin">
+
+                    <div class="form-heading">
+                        <h2 data-en="Welcome back!" data-fil="Maligayang pagbabalik!">Welcome back!</h2>
+                        <p data-en="Sign in to continue your learning journey." data-fil="Mag-sign in upang ituloy ang iyong paglalakbay sa pag-aaral.">Sign in to continue your learning journey.</p>
+                    </div>
+
+                    <!--socials v2-->
+                    <div class="social-row">
+                        <button class="social-btn" onclick="socialLogin('Google')">
+                            <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-3.59-13.46-8.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                            <span data-en="Continue with Google" data-fil="Google ang gamitin">Continue with Google</span>
+                        </button>
+                        <button class="social-btn" onclick="socialLogin('Facebook')" style="border-color:#1877F2;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073c0 6.027 4.388 11.025 10.125 11.927v-8.437H7.078v-3.49h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.49h-2.796v8.437C19.612 23.098 24 18.1 24 12.073z"/></svg>
+                            <span data-en="Continue with Facebook" data-fil="Facebook ang gamitin">Continue with Facebook</span>
+                        </button>
+                    </div>
+
+                    <div class="divider" data-en="or sign in with email" data-fil="o mag-sign in gamit ang email">or sign in with email</div>
+
+                    <div class="form-group">
+                        <label data-en="Username or Email" data-fil="Username o Email">Username or Email</label>
+                        <div class="input-wrap">
+                            <input type="text" id="li_user"
+                                data-en-ph="Username or email address" data-fil-ph="Username o email address"
+                                placeholder="Username or email address">
+                        </div>
+                        <div class="field-error" id="err_liuser"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label data-en="Password" data-fil="Password">Password</label>
+                        <div class="input-wrap">
+                            <input type="password" id="li_pass"
+                                data-en-ph="Your password" data-fil-ph="Ang iyong password"
+                                placeholder="Your password">
+                            <button type="button" class="eye-btn" onclick="toggleEye('li_pass', this)">👁</button>
+                        </div>
+                        <div class="field-error" id="err_lipass"></div>
+                    </div>
+
+                    <div class="forgot">
+                        <button onclick="handleForgot()" data-en="Forgot password?" data-fil="Nakalimutan ang password?">Forgot password?</button>
+                    </div>
+
+                    <!--recaptchca v2-->
+                    <div class="captcha-wrap">
+                        <div class="g-recaptcha"
+                            id="recaptcha-login"
+                            data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                            data-callback="onLoginCaptcha"
+                            data-expired-callback="onCaptchaExpired">
+                        </div>
+                        <div class="captcha-error" id="err_captcha_login"
+                            data-en="Please complete the CAPTCHA to continue."
+                            data-fil="Mangyaring kumpletuhin ang CAPTCHA upang magpatuloy.">
+                            Please complete the CAPTCHA to continue.
+                        </div>
+                    </div>
+
+                    <button class="submit-btn" onclick="handleLogin()" id="btn_login" data-en="Sign In" data-fil="Mag-sign In">Sign In</button>
+
+                    <div class="switch-link">
+                        <span data-en="Don't have an account?" data-fil="Wala ka pang account?">Don't have an account?</span>
+                        <button onclick="switchTab('signup')" data-en="Register here" data-fil="Mag-register dito">Register here</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!--footer-->
+    <footer class="footer-strip">
+        <p data-en="© 2026 QuizMaster. All rights reserved." data-fil="© 2026 QuizMaster. Lahat ng karapatan ay nakalaan.">© 2026 QuizMaster. All rights reserved.</p>
+        <div class="footer-strip-links">
+            <a href="#" data-en="Privacy Policy"   data-fil="Patakaran sa Privacy">Privacy Policy</a>
+            <a href="#" data-en="Terms of Service" data-fil="Mga Tuntunin">Terms of Service</a>
+            <a href="#" data-en="Help Center"      data-fil="Help Center">Help Center</a>
+        </div>
+    </footer>
+</body>
+</html>
